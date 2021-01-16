@@ -15,7 +15,8 @@ const UserSchema = new Schema({
   },
   username: {
     type: String,
-    required: true
+    required: true,
+    // unique: true, // this doesn't seem to work
   },
   resetToken: {
     type: String

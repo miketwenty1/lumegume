@@ -44,7 +44,7 @@ router.post('/compute', (req, res, next) => {
 });
 
 router.post('/login', async (req, res, next) => {
-  passport.authenticate('login', (error, user) => {
+  passport.authenticate('login', async (error, user) => {
     try {
       if (error) {
         return next(error);
@@ -52,19 +52,19 @@ router.post('/login', async (req, res, next) => {
       if (!user) {
         return next(new Error('email password required'));
       }
-        req.login(user, { 
-          session: false
+      req.login(user, { 
+        session: false
 
-        }, (err) => {
-          if (err) {
-            return next(error);
-          } else {
-            return res.status(200).json({
-              user, 
-              status: 200
-            });
-          }
-        });
+      }, (err) => {
+        if (err) {
+          return next(error);
+        } else {
+          return res.status(200).json({
+            user, 
+            status: 200
+          });
+        }
+      });
 
     } catch (err) {
       console.log(`error: ${err}`);
@@ -72,18 +72,17 @@ router.post('/login', async (req, res, next) => {
     }
   })(req, res, next);
 
-
-  if (!Object.keys(req.body).length) {
-    res.status(400).json({
-      message: 'invalid body',
-      status: 400
-    });
-  } else {
-    res.status(200).json({
-      message: 'ok',
-      status: 200
-    });
-  }
+  // if (!Object.keys(req.body).length) {
+  //   res.status(400).json({
+  //     message: 'invalid body',
+  //     status: 400
+  //   });
+  // } else {
+  //   res.status(200).json({
+  //     message: 'ok',
+  //     status: 200
+  //   });
+  // }
 });
 
 router.post('/logout', (req, res) => {
