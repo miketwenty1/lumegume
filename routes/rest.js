@@ -14,14 +14,13 @@ router.get('/status', (req, res) => {
   });
 });
 
-router.post('/signup', passport.authenticate('signup', {
-  session: false
-}), async (req, res, next) => {
-  res.status(200).json({
-    message: 'signup was sucessful',
-    status: 200
-  });
-});
+router.post(
+  '/signup', 
+  passport.authenticate('signup', {session: false}), 
+  async (req, res, next) => {
+    res.status(200).json({message: 'signup was sucessful',status: 200});
+  }
+);
 
 router.post('/compute', (req, res, next) => {
   if (parseInt(req.body.value, 10) > 5) {

@@ -4,6 +4,27 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
+const mongoose = require('mongoose');
+console.log(mongoose.version);
+// mongo connection
+const uri = process.env.MONGO_CONNECTION_URL;
+console.log(uri);
+const mongoConfig = {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useUnifiedTopology: true
+};
+if (process.env.MONGO_USER_NAME && process.env.MONGO_PASSWORD) {
+  mongoConfig.auth = { authSource: 'admin' };
+  mongoConfig.user = process.env.MONGO_USER_NAME;
+  mongoConfig.pass = process.env.MONGO_PASSWORD;
+}
+mongoose.connect(uri, mongoConfig);
+
+mongoose.connection.on('error', (err) => {
+  console.log(err);
+  process.exit(1);
+});
 
 const app = express();
 console.log(process.env.PORT);
@@ -46,6 +67,13 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(port, () => {
-  console.log(`running on port ${port}`);
-});
+
+
+mongoose.connection.on('connected', () => {
+  
+  console.log('connected to mongo');
+
+  app.listen(port, () => {
+    console.log(`running on port ${port}`);
+  });
+})

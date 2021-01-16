@@ -2,21 +2,23 @@
   "name": "lumegume",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node main.js",
-    "start": "node main.js",
-    "nodemon": "npx nodemon main.js"
+    "build": "node index.js",
+    "start": "node index.js",
+    "nodemon": "npx nodemon index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "mongoose": "^5.11.11",
     "node-fetch": "^2.6.1",
     "nodemon": "^2.0.6",
     "passport": "^0.4.1",
