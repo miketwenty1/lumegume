@@ -1,6 +1,6 @@
 const passport = require('passport');
 const localStrategy = require('passport-local');
-
+const JwtStrategy = require('passport-jwt');
 const UserModel = require('../models/UserModel')
 
 // passport.use(passport.initialize());
@@ -39,3 +39,24 @@ passport.use('login', new localStrategy.Strategy({
     return done(err);
   }
 }));
+
+// verify JWT token
+passport.use(
+  new JwtStrategy.Strategy({
+    secretOrKey: process.env.JWT_SECRET,
+    jwtFromRequest: (req) => {
+      let token = null;
+      if (req && req.cookies) {
+        token = req.cookies.jwt;
+      }
+      return token;
+    }
+  }, 
+  async (token, done) => {
+    try {
+      return done(null, token.user);
+    } catch (err) {
+      return done(err);
+    }
+  })
+);
