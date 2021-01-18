@@ -3,8 +3,18 @@ const cors = require('cors');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const passport = require('passport');
 const mongoose = require('mongoose');
+const passport = require('passport');
+
+// routes
+const routes = require('./routes/rest');
+const passwordRoutes = require('./routes/password');
+const secureRoutes = require('./routes/secure');
+
+// require passport auth
+require('./auth/auth');
+
+
 console.log(mongoose.version);
 // mongo connection
 const uri = process.env.MONGO_CONNECTION_URL;
@@ -30,9 +40,7 @@ const app = express();
 console.log(process.env.PORT);
 const port = process.env.PORT || 3000;
 
-const routes = require('./routes/rest');
-const passwordRoutes = require('./routes/password');
-require('./auth/auth');
+
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -47,6 +55,8 @@ app.use(cookieParser());
 // setup routes
 app.use('/', routes);
 app.use('/', passwordRoutes);
+// secure routes secured by jwt
+app.use('/', passport.authenticate('jwt', {session: false}), secureRoutes);
 
 
 // catch all other routes (404's)

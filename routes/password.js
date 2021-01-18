@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 router.post('/forgotpassword', (req, res) => {
-  if (!req.body.email ) {
+  if (!req.body.email) {
     res.status(400).json({
       message: 'invalid body',
       status: 400

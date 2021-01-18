@@ -73,7 +73,7 @@ router.post('/login', async (req, res, next) => {
           name: user.username
         }
 
-        const token = jwt.sign({ user: body }, process.env.JWT_SECRET, { expiresIn: 86400 }  );
+        const token = jwt.sign({ user: body }, process.env.JWT_SECRET, { expiresIn: 300 }  );
         const refreshToken = jwt.sign({ user: body }, process.env.JWT_REFRESH_SECRET, { expiresIn: 86400 }  );
         // store token in cookie
         res.cookie('jwt', token);
@@ -84,7 +84,7 @@ router.post('/login', async (req, res, next) => {
           refreshToken,
           email: user.email,
           _id: user._id,
-          name: user.username //name
+          name: user.name //username
         };
 
         // send token back to user
@@ -117,32 +117,43 @@ router.post('/login', async (req, res, next) => {
 });
 
 router.post('/logout', (req, res) => {
-  if (!Object.keys(req.body).length) {
-    res.status(400).json({
-      message: 'invalid body',
-      status: 400
-    });
-  } else {
-    res.status(200).json({
-      message: 'ok',
-      status: 200
-    });
-  }
+  if (req.cookies) {
+    const refreshToken = req.cookies.refreshJwt;
+    if (refreshToken in tokenList) {
+      delete tokenList[refreshToken];
+    }
+    res.clearCookie('jwt');
+    res.clearCookie('refreshJwt');
+    
+  } 
+  res.status(200).json({ message: 'logged out', status: 200 });
 });
 
 router.post('/token', (req, res) => {
-  if (!req.body.refreshToken ) {
-    res.status(400).json({
-      message: 'invalid body',
-      status: 400
-    });
+  const { refreshToken } = req.body;
+  if (refreshToken in tokenList) {
+    const body = {
+      email: tokenList[refreshToken].email,
+      _id: tokenList[refreshToken]._id,
+      name: tokenList[refreshToken].name
+    };
+    const token = jwt.sign({ user: body }, process.env.JWT_SECRET, { expiresIn: 300 }  );
+    // update jwt
+    res.cookie('jwt', token);
+    tokenList[refreshToken].token = token;
+    res.status(200).json({ token, status: 200});
+
   } else {
-    const { refreshToken } = req.body;
-    res.status(200).json({
-      message: `token refresh for: ${refreshToken}`,
-      status: 200
-    });
+    res.status(401).json({message: 'unauthorized', status: 401});
   }
+
+  // if (!req.body.refreshToken ) {
+    
+  //   res.status(400).json({ message: 'invalid body', status: 400 });
+  // } else {
+    
+  //   res.status(200).json({ message: `token refresh for: ${refreshToken}`,status: 200});
+  // }
 });
 
 module.exports = router;
