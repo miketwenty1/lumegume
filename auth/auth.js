@@ -13,7 +13,12 @@ passport.use('signup', new localStrategy.Strategy({
 
   try {
     const { username } = req.body;
+    const searchUser = await UserModel.findOne({ username: username});
+    if (searchUser) {
+      return done(new Error(`username ${username} taken`));
+    }
     const user = await UserModel.create({email, password, username});
+    
     return done(null, user);
   } catch (err) {
     return done(err);

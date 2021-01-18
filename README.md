@@ -13,3 +13,8 @@ monogod --config /usr/local/etc/mongod.conf
 
 # UI tool for mongodb
 - compass
+
+# Nodemailer
+- https://myaccount.google.com/u/5/lesssecureapps
+- or 2fa + app password
+- verify report as non phishing
