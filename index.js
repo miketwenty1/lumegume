@@ -14,6 +14,17 @@ const secureRoutes = require('./routes/secure');
 // require passport auth
 require('./auth/auth');
 
+const app = express();
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+// parse application/json
+app.use(bodyParser.json())
+app.use(cors({
+  credentials: true,
+  origin: process.env.CORS_ORIGIN
+}));
+app.use(cookieParser());
 
 console.log(mongoose.version);
 // mongo connection
@@ -37,27 +48,29 @@ mongoose.connection.on('error', (err) => {
   process.exit(1);
 });
 
-const app = express();
+
 console.log(process.env.PORT);
 const port = process.env.PORT || 3000;
 
 
+// allow express to use files in public folder
+app.use(express.static(__dirname + '/public')); 
 
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
-// parse application/json
-app.use(bodyParser.json())
-app.use(cors({
-  credentials: true,
-  origin: process.env.CORS_ORIGIN
-}));
-app.use(cookieParser());
+app.get('/', (req, res) => {
+  res.send(__dirname + '/index.html'); 
+});
+
+
 
 // setup routes
 app.use('/', routes);
 app.use('/', passwordRoutes);
 // secure routes secured by jwt
 app.use('/', passport.authenticate('jwt', {session: false}), secureRoutes);
+
+app.get('/game.html', passport.authenticate('jwt', { session: false }), (req, res) => {
+  res.status(200).json(req.user);
+});
 
 
 // catch all other routes (404's)
@@ -77,7 +90,6 @@ app.use((err, req, res, next) => {
     status: 599
   });
 });
-
 
 
 mongoose.connection.on('connected', () => {

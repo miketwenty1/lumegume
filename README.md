@@ -1,5 +1,6 @@
 # lumegume
-some say this is almost as good as lamégamé
+The purpose of this repo is to be a simple example of a login / password recovery front end with an API. Also includes the use of JWT tokens for auth with different endpoints.
+requires: mongo, docker, nodemailer configured (currently gmail for reset password flow).
 
 # mongo docker
 docker run --name mongo -p 27017:27017 \
@@ -17,4 +18,11 @@ monogod --config /usr/local/etc/mongod.conf
 # Nodemailer
 - https://myaccount.google.com/u/5/lesssecureapps
 - or 2fa + app password
-- verify report as non phishing
+- verify report email as non phishing to get it out of auto-spam
+
+# html Flows
+- login
+- logout
+- signup
+- forgot password
+- reset password

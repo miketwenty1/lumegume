@@ -3,7 +3,6 @@ const ChatModel = require('../models/ChatModel');
 
 const router = express.Router();
 
-
 router.post('/chat', async (req, res) => {
   if (!req.body.message ) {
     res.status(400).json({

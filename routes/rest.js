@@ -7,10 +7,10 @@ const tokenList = {};
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  // console.log(req);
-  res.send('HAVE FUN STAYING POOR!');
-});
+// router.get('/', (req, res) => {
+//   // console.log(req);
+//   res.send('HAVE FUN STAYING POOR!');
+// });
 
 router.get('/status', (req, res) => {
   res.cookie('tetsting','test');
@@ -36,16 +36,6 @@ router.post('/compute', (req, res, next) => {
   }
   
   console.log(req.body);
-  // if(req.body.value > 5) {
-    
-  //   res.status(200).json({
-  //     message: 2,
-  //     status: 200
-  //   });
-  // } else {
-  //   
-  // }
-  
 
 });
 
@@ -60,7 +50,6 @@ router.post('/login', async (req, res, next) => {
       }
       req.login(user, { 
         session: false
-
       }, (err) => {
         if (err) {
           return next(error);
@@ -88,7 +77,6 @@ router.post('/login', async (req, res, next) => {
         };
 
         // send token back to user
-
         return res.status(200).json({
           token,
           refreshToken,  
@@ -102,32 +90,11 @@ router.post('/login', async (req, res, next) => {
       return next(err);
     }
   })(req, res, next);
-
-  // if (!Object.keys(req.body).length) {
-  //   res.status(400).json({
-  //     message: 'invalid body',
-  //     status: 400
-  //   });
-  // } else {
-  //   res.status(200).json({
-  //     message: 'ok',
-  //     status: 200
-  //   });
-  // }
 });
-
-router.post('/logout', (req, res) => {
-  if (req.cookies) {
-    const refreshToken = req.cookies.refreshJwt;
-    if (refreshToken in tokenList) {
-      delete tokenList[refreshToken];
-    }
-    res.clearCookie('jwt');
-    res.clearCookie('refreshJwt');
-    
-  } 
-  res.status(200).json({ message: 'logged out', status: 200 });
-});
+// this will treat GET and POST the same.
+router.route('/logout')
+  .get(processLogoutRequest)
+  .post(processLogoutRequest);
 
 router.post('/token', (req, res) => {
   const { refreshToken } = req.body;
@@ -146,14 +113,28 @@ router.post('/token', (req, res) => {
   } else {
     res.status(401).json({message: 'unauthorized', status: 401});
   }
-
-  // if (!req.body.refreshToken ) {
-    
-  //   res.status(400).json({ message: 'invalid body', status: 400 });
-  // } else {
-    
-  //   res.status(200).json({ message: `token refresh for: ${refreshToken}`,status: 200});
-  // }
 });
+
+function processLogoutRequest(req, res) {
+  if (req.cookies) {
+    const refreshToken = req.cookies.refreshJwt;
+    if (refreshToken in tokenList) {
+      delete tokenList[refreshToken];
+    }
+    res.clearCookie('jwt');
+    res.clearCookie('refreshJwt');
+    
+  }
+  
+  if (req.method === 'POST') {
+    res.status(200).json({ message: 'logged out', status: 200 });
+  } else if (req.method === 'GET') {
+    res.sendFile('logout.html', { root: './public'});
+    // res.status(200).json({ message: 'logged out', status: 200 });
+  } else {
+    // throw an error
+  }
+  
+}
 
 module.exports = router;
